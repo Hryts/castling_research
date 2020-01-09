@@ -1,0 +1,37 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+df <- read.csv2("january_2019_blitz.csv", header=TRUE, sep=",")
+
+ratios <- data.frame(rating = seq(1000, 2100, by=20), all=0, castling=0)
+success <- data.frame(rating = seq(1000, 2100, by=20), castling=0, wins=0)
+```
+
+
+```{r}
+for (i in ratios$rating) {
+  ratios$all[ratios$rating == i] = length(df$rating[df$rating %in% seq(i, i + 20)])
+  ratios$castling[ratios$rating == i] = sum(df$castling[df$rating %in% seq(i, i + 20)])
+  
+  with_castling <- df[as.numeric(df$castling)==1,]
+  with_castling <- with_castling[with_castling$rating %in% seq(i, i + 20),]
+  
+  success$castling[success$rating == i] = length(with_castling$rating)
+  with_castling <- with_castling[as.numeric(with_castling$victory) == 3,]
+  success$wins[success$rating == i] <- length(with_castling$rating)
+}
+
+plot(x = success$rating, y = success$wins / success$castling, type="l")
+plot(x = ratios$rating, y = ratios$castling / ratios$all, type="l")
+```
+```{r}
+func <- success$wins / success$castling ~ success$rating
+linear_model = lm(func)
+summary(linear_model)
+
+plot(func, col="blue", pch=16)
+abline(linear_model, col="red")
+```
