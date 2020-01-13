@@ -110,13 +110,14 @@ It is almost one, which means, that castling almost does not matter for win rate
 ```{r}
 func <- victories$wins / victories$castling ~ victories$rating
 linear_model = lm(func)
-plot(func, col="blue", pch=16, main="Dependency of win rate on rating", xlab="Raing", ylab="Win rate")
+plot(func, col="blue", pch=16, main="Dependency of win rate on rating", xlab="Rating", ylab="Win rate")
 abline(linear_model, col="red")
 ```
 
 The data should fit the LM very well, so let us look at the sumary
 
 ```{r}
+
 summary(linear_model)
 ```
 The F-statistic p-value is extremely small, so is B`s p-value. Also, Multiple R-squared is very big (0.95 out of 1).
@@ -204,15 +205,21 @@ ks.test(castling_moves, "pgamma", shape=shape, rate=rate)
 ```
 
 ```{r}
-move_number_success_rate = data.frame(move_number=seq(1, 50), wins=0, number_of_games=0)
+move_number_success_rate = data.frame(move_number=seq(1, 30), wins=0, number_of_games=0)
 
 for(i in 1:length(df$move_number)){
-  if(as.numeric(df$victory[i]) == 3 && df$move_number[i] <= 50){
+  if(as.numeric(df$victory[i]) == 3 && df$move_number[i] <= 30){
     move_number_success_rate$wins[df$move_number[i]] = move_number_success_rate$wins[df$move_number[i]] + 1
   }
-  if(df$move_number[i] <= 50){
+  if(df$move_number[i] <= 30){
     move_number_success_rate$number_of_games[df$move_number[i]] = move_number_success_rate$number_of_games[df$move_number[i]] + 1
   }
 }
 plot(x=move_number_success_rate$move_number, y=move_number_success_rate$wins/move_number_success_rate$number_of_games)
+
+func2 <- move_number_success_rate$wins/move_number_success_rate$number_of_games ~ move_number_success_rate$move_number
+linear_model2 <- lm(func2)
+plot(func2, col="blue", pch=16, main="Dependency of win rate on castling move number", xlab="Castling move number", ylab="Win rate")
+abline(linear_model2, col="red")
+summary(linear_model2)
 ```
