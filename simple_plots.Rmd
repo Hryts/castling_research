@@ -207,8 +207,10 @@ for(i in 1:length(df$move_number)){
     move_number_success_rate$number_of_games[df$move_number[i]] = move_number_success_rate$number_of_games[df$move_number[i]] + 1
   }
 }
-plot(x=move_number_success_rate$move_number, y=move_number_success_rate$wins/move_number_success_rate$number_of_games)
 
+```
+
+```{r}
 func2 <- move_number_success_rate$wins/move_number_success_rate$number_of_games ~ move_number_success_rate$move_number
 linear_model2 <- lm(func2)
 plot(func2, col="blue", pch=16, main="Dependency of win rate on castling move number", xlab="Castling move number", ylab="Win rate")
