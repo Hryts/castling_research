@@ -8,19 +8,18 @@ output:
 Team: Denys Datsko, Bernaszikovskyi Viacheslav, Hrytsay Maksym</h4></center>
 
 ### Intro
-Our topic is about chess, because we like to play chess and want to know a little bit more about this game.
+Our topic is about chess because we like to play chess and want to know a little bit more about this game.
 
-We found a good data at https://www.ficsgames.org/download.html
-This is a set of many chess games from some internet platdorms
+We found good data at https://www.ficsgames.org/download.html
+This is a set of many chess games from some internet platforms
 
 We downloaded the data for the whole 2019 year in blitz mode. There are about 2 million games.
 
-It was in .PGN format, so we made a parser in Python to get all the data in convenient .CSV format.
+It was in .PGN format, so we made a parser in Python to get all the data in convenient.CSV format.
 
-Parser and the parsed .csv file can be found here: https://github.com/Hryts/castling_research
+Parser and the parsed .csv file can be found here: https://github.com/Hryts/castling_research.
 
-In the .csv file we have 4 columns representing the rating of a player, whether he made a castling, whether he won and the number of the move, castling was made on.
-
+In the .csv file we have four columns representing the rating of a player, whether he made a castling, whether he won and the number of the move, castling was made on.
 
 
 ```{r}
@@ -70,8 +69,9 @@ plot(x = castling_rate$rating, y = castling_rate$castling / castling_rate$all, t
      xlab="Rating", ylab="Frequency")
 ```
 
-From here we can see, that in general, the bigger rating of the player is, the more popular move castling is.
-This can mean, that castling is an efective move, as almost all games by players with high rating are with castling played
+
+From here we can see that in general, the bigger the rating of the player is, the more popular move castling is.
+This can mean, that castling is an effective move, as almost all games by players with a high rating are with castling played.
 
 
 #### Let us plot the graph of dependency of win rate with castling on player`s rating
@@ -81,15 +81,17 @@ plot(x = victories$rating, y = victories$wins / victories$castling, type="l",
      main="Win rate with castling", xlab="Rating", ylab="Win rate")
 ```
 
-It seems, this data fits into some linear model. Maybe, the castling is really a very powerful move
-Let us look at the corelation of win rate with castling and castling frequency
+
+It seems this data fits into some linear model. Maybe, the castling is a very powerful move
+Let us look at the correlation of win rate with castling and castling frequency
 
 
 ```{r}
 cor(victories$wins / victories$castling, castling_rate$castling / castling_rate$all)
 ```
+
 It seems, that the more player does castling, the more he wins. 
-But, let us plot the graph of general win rate (without paying attention to castling) and analyze it
+But, let us plot the graph of general win rate (without paying attention to castling) and analyze it.
 
 
 ```{r}
@@ -99,15 +101,15 @@ plot(x = overall$rating, y = overall$wins / overall$games, type="l",
 
 As we can see here, the graph is almost the same, as the one of win rate with castling.
 
-Let us find their corelation
+Let us find their correlation.
 
 ```{r}
 cor(overall$wins / overall$games, victories$wins / victories$castling)
 ```
 
-It is almost one, which means, that castling almost does not matter for win rate
+It is almost one, which means that castling almost does not matter for the win rate.
 
-#### It is interesting, that win rates with castling have a close to linear dependency of the rating. Let us test this
+#### It is interesting that win rates with castling have a close to the linear dependency of the rating. Let us test this.
 
 ```{r}
 func <- victories$wins / victories$castling ~ victories$rating
@@ -122,10 +124,10 @@ The data should fit the LM very well, so let us look at the sumary
 summary(linear_model)
 ```
 The F-statistic p-value is extremely small, so is B's p-value. Also, Multiple R-squared is very big (0.95 out of 1).
-This shows, that our data fits into this linear model almost perfectly. So, there is a linear dependency between playe's rating and win rate.
+This shows that our data fits into this linear model almost perfectly. So, there is a linear dependency between player's rating and win rate.
 #### Why this happens?
-In general, at some internet platforms, there are not so many players with high or low rating, so most of games
-are between players with a big difference in ratings. This leads to the fact, that the bigger rating is, the bigger number
+In general, at some internet platforms, there are not so many players with a high or low rating, so most of the games
+are between players with a big difference in ratings. This leads to the fact that the bigger rating is, the bigger number
 of games the player will play with weaker opponents.
 
 
@@ -133,11 +135,10 @@ of games the player will play with weaker opponents.
 ### Tests
 
 We can consider all the games, in which one player won (exclude all draws)
-This way, all the data can be represented as many Bernoulli random variables (0 if the player lost tieh probability 1 - p , 1 if he won with probability p)
-We have two data sets: all the games and all the games with castling. We know, that the unbiased estimator fot P is sample mean, so we can perform a t-test (as variance is unknown) for estimating, whether two P parameters of variables are equal.
+This way, all the data can be represented as many Bernoulli random variables (0 if the player lost with probability 1 - p, 1 if he won with probability p)
+We have two data sets: all the games and all the games with castling. We know that the unbiased estimator for P is the sample mean, so we can perform a t-test (as the variance is unknown) for estimating, whether two P parameters of variables are equal.
 
 If they are equal, it means, that castling does not influence the game results, if they are not, then castling increases or decreases the win rate (depending on the result)
-
 ```{r}
 data_wins <- df$victory[as.numeric(df$victory) != 2]
 length(df$victory)
@@ -149,8 +150,8 @@ x <- as.numeric(as.character(data_wins))
 y = as.numeric(as.character(data.castling_wins))
 t.test(x = x, y = y, alternative="two.sided")
 ```
-The mean of the first data is 0.5, as we anlysed only the data from many games (in which one player wins and the second one loses)
-The mean of the second data is 0.509, almost 0.51. This is not so bog difference, but for such a big data (almost 4 million elements), this is very significant. This is also approved by the p-value of the test. It is extremely small, so we should reject the null hypotesis. This means, that the castling is really a useful move and the one is more likely to win, making the castling
+The mean of the first data is 0.5, as we analyzed only the data from many games (in which one player wins and the second one loses)
+The mean of the second data is 0.509, almost 0.51. This is not so big difference, but for such a big data (almost 4 million elements), this is very significant. This is also approved by the p-value of the test. It is extremely small, so we should reject the null hypothesis. This means that the castling is really a useful move and the one is more likely to win, making the castling.
 
 
 #### But, what is the average win rate if the player does not do castling?
@@ -184,17 +185,17 @@ rate <- fit.gamma$estimate[2]
 
 ks.test(castling_moves, "pgamma", shape=shape, rate=rate)
 ```
-We see, that the resulting p-value of the test is extremely small. This means, that our data is almost for sure not drawn from the Gamma distribution.
+We see that the resulting p-value of the test is extremely small. This means that our data is almost for sure not drawn from the Gamma distribution.
 
 But why is the p-value so small?
 That is because for p-value to be larger, the distribution of data of such a size should be extremely close to the expected one with almost no variation.
 
 
 
-#### Dependency of success of castling on number of move when it was made
+#### Dependency of success of castling on the number of a move when it was made
 
-We decided to also check if it is more sufficient to make castling earlier or later.
-Here is the plot of victory rate after castling in dependence on move when it was made.
+We also decided to check if it is more sufficient to make castling earlier or later.
+Here is the plot of victory rate after castling in dependence on the move when it was made.
 
 ```{r}
 move_number_success_rate = data.frame(move_number=seq(1, 30), wins=0, number_of_games=0)
@@ -221,4 +222,4 @@ From summary we see, that R-squared value is .7511, which tells us that the line
 F-statistic is big enough to judge about dependence.
 
 
-Here we can see that it is more profitable to castle later. We suppose, that it is a loss of tempo to castle early. In addition, the oponent can improve his attack on the side where the king is.
+Here we can see that it is more profitable to castle later. We suppose that it is a loss of tempo to castle early. Besides, the opponent can improve his attack on the side where the king is.
