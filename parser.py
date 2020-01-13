@@ -14,8 +14,12 @@ def parse(input_file, output_file, number_of_games):
         # parse the exact number of games or till the end of the file if number_of_games is < 0
         while current_game != number_of_games:
             current_game += 1
+            if current_game % 100000 == 0:
+                print(f"Parsed {current_game} games already")
+
             white_rating = black_rating = None
             white_castling = black_castling = 0
+            white_castling_number = black_castling_number = 0
             result = None
 
             try:
@@ -37,16 +41,20 @@ def parse(input_file, output_file, number_of_games):
                     # if it is the lines with moves listed
                     if i == 18:
                         # check if the first player has castled
-                        if re.search(r"\d+\. O-O(-O)?", line):
+                        white_castling_search = re.search(r"(\d+)\. O-O(-O)?", line)
+                        if white_castling_search:
                             white_castling = 1
+                            white_castling_number = white_castling_search.groups('0')[0]
 
                         # check if the second player has castled
-                        if re.search(r"\d+\.\s.{2,5}\sO-O(-O)?", line):
+                        black_castling_search = re.search(r"(\d+)\.\s.{2,5}\sO-O(-O)?", line)
+                        if black_castling_search:
                             black_castling = 1
+                            black_castling_number = black_castling_search.groups('0')[0]
 
                 # write results to the .csv file
-                out_file.write(f"{white_rating}, {white_castling}, {result[0]}\n")
-                out_file.write(f"{black_rating}, {black_castling}, {result[1]}\n")
+                out_file.write(f"{white_rating}, {white_castling}, {result[0]}, {white_castling_number}\n")
+                out_file.write(f"{black_rating}, {black_castling}, {result[1]}, {black_castling_number}\n")
             except (KeyError, AttributeError) as e:
                 # if reached the end of the file (cause .readline() will always return an empty line)
                 if pgn.readline() == "" and pgn.readline() == "" and pgn.readline() == "":
@@ -64,4 +72,4 @@ def parse(input_file, output_file, number_of_games):
 
 
 if __name__ == '__main__':
-    parse('games.pgn', 'january_2019_blitz.csv', -1)
+    parse('games.pgn', 'whole_year_2019_blitz.csv', -1)

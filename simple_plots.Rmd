@@ -7,6 +7,8 @@ output: html_notebook
 
 ```{r}
 library("BSDA")
+install.packages("fitdistrplus")
+library("fitdistrplus")
 ```
 
 ```{r}
@@ -60,7 +62,7 @@ data_wins <- df$victory[as.numeric(df$victory) != 2]
 length(df$victory)
 
 data.castling_wins = df$victory[df$castling == 1]
-data.castling_wins = data.castling_wins[as.numeric(data.castling_wins) != 2]
+data.castling_wins = data.castling_wins #[as.numeric(data.castling_wins) != 2]
 
 
 x <- as.numeric(as.character(data_wins))
@@ -70,10 +72,45 @@ t.test(x = x, y = y, alternative="less")
 
 ```{r}
 data.no_castling <- df$victory[df$castling==0]
-data.no_castling_wins <- data.no_castling[as.numeric(data.no_castling) != 2]
+data.no_castling_wins <- data.no_castling #[as.numeric(data.no_castling) != 2]
 x <- as.numeric(as.character(data_wins))
 y <- as.numeric(as.character(data.no_castling_wins))
 t.test(x=x, y=y, alternative="greater")
 ```
 
 ```{r}
+castling_moves = df$move_number[df$move_number != 0]
+hist(castling_moves, breaks=seq(2, 55), probability=T)
+
+freq <- c()
+for (i in seq(0, 100)) {
+  freq[i] = sum(castling_moves == i) / length(castling_moves)
+}
+expected <- dpois(x = 0:99, lambda = mean(castling_moves))
+sum(expected)
+
+plot(freq)
+plot(expected)
+
+chisq.test(x=freq, p=expected)
+
+
+y <- rpois(length(castling_moves), lambda=mean(castling_moves))
+
+ks.test(castling_moves, y)
+
+descdist(castling_moves)
+fit.gamma <- fitdist(castling_moves, "exp")
+plot(fit.gamma)
+```
+
+```{r}
+mu <- mean(castling_moves)
+sd = sd(castling_moves)
+fit.gamma
+shape <- fit.gamma$estimate[1]
+rate <- fit.gamma$estimate[2]
+
+ks.test(castling_moves, "plnorm")
+```
+
