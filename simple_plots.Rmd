@@ -1,7 +1,17 @@
 ---
-title: "R Notebook"
 output: html_notebook
 ---
+
+<center><h4>Mini research project. <br>
+Team: Denys Datsko, Bernaszikovskyi Viacheslav, Hrytsay Maksym</h4></center>
+
+### Intro
+Our topic is about chess, because we like to play chess and want to know a little bit more about this game.
+
+We found a good data at https://www.ficsgames.org/download.html
+This is a set of many chess games from some internet platdorms
+
+We downloaded the data for the whole 2019 year in blitz mode. There are about 4 million games.
 
 
 
@@ -16,7 +26,6 @@ df <- read.csv2("whole_year_2019_blitz.csv", header=TRUE, sep=",")
 
 ratios <- data.frame(rating = seq(1000, 2100, by=20), all=0, castling=0)
 success <- data.frame(rating = seq(1000, 2100, by=20), castling=0, wins=0)
-
 overal <- data.frame(rating = seq(1000, 2100, by=20), games=0, wins=0)
 ```
 
@@ -31,8 +40,6 @@ for (i in ratios$rating) {
   won <- df[df$rating %in% seq(i, i + 20),]
   won <- as.numeric(won$victory) == 3
   overal$wins[overal$rating == i] = sum(won)
-  
-  
   
   with_castling <- df[as.numeric(df$castling)==1,]
   with_castling <- with_castling[with_castling$rating %in% seq(i, i + 20),]
@@ -82,35 +89,17 @@ t.test(x=x, y=y, alternative="greater")
 castling_moves = df$move_number[df$move_number != 0]
 hist(castling_moves, breaks=seq(2, 55), probability=T)
 
-freq <- c()
-for (i in seq(0, 100)) {
-  freq[i] = sum(castling_moves == i) / length(castling_moves)
-}
-expected <- dpois(x = 0:99, lambda = mean(castling_moves))
-sum(expected)
-
-plot(freq)
-plot(expected)
-
-chisq.test(x=freq, p=expected)
-
-
-y <- rpois(length(castling_moves), lambda=mean(castling_moves))
-
-ks.test(castling_moves, y)
 
 descdist(castling_moves)
-fit.gamma <- fitdist(castling_moves, "exp")
+fit.gamma <- fitdist(castling_moves, "gamma")
 plot(fit.gamma)
 ```
 
 ```{r}
-mu <- mean(castling_moves)
-sd = sd(castling_moves)
 fit.gamma
 shape <- fit.gamma$estimate[1]
 rate <- fit.gamma$estimate[2]
 
-ks.test(castling_moves, "plnorm")
+ks.test(castling_moves, "pgamma", shape=shape, rate=rate)
 ```
 
