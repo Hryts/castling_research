@@ -11,7 +11,7 @@ Our topic is about chess, because we like to play chess and want to know a littl
 We found a good data at https://www.ficsgames.org/download.html
 This is a set of many chess games from some internet platdorms
 
-We downloaded the data for the whole 2019 year in blitz mode. There are about 4 million games.
+We downloaded the data for the whole 2019 year in blitz mode. There are about 2 million games.
 
 It was in .PGN format, so we made a parser in Python to get all the data in convenient .CSV format.
 
@@ -58,22 +58,30 @@ for (i in castling_rate$rating) {
 ```
 
 
+#### Let us plot the graph of dependency of castling frequency on the player rating
 
 
 ```{r}
-
-plot(x = overall$rating, y = overall$wins / overall$games, type="l")
-
+plot(x = castling_rate$rating, y = castling_rate$castling / castling_rate$all, type="l")
 ```
+
+From here we can see, that in general, the bigger rating of the player is, the more popular move castling is.
+This can mean, that castling is an efective move, as almost all games by players with high rating are with castling played
+
+
+```{r}
+plot(x = overall$rating, y = overall$wins / overall$games, type="l")
+```
+
+
+
 
 ```{r}
 plot(x = victories$rating, y = victories$wins / victories$castling, type="l")
 ```
 
 
-```{r}
-plot(x = castling_rate$rating, y = castling_rate$castling / castling_rate$all, type="l")
-```
+
 
 
 
