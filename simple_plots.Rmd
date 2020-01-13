@@ -109,6 +109,7 @@ It is almost one, which means, that castling almost does not matter for win rate
 
 ```{r}
 func <- victories$wins / victories$castling ~ victories$rating
+linear_model = lm(func)
 plot(func, col="blue", pch=16, main="Dependency of win rate on rating", xlab="Raing", ylab="Win rate")
 abline(linear_model, col="red")
 ```
@@ -116,7 +117,6 @@ abline(linear_model, col="red")
 The data should fit the LM very well, so let us look at the sumary
 
 ```{r}
-linear_model = lm(func)
 summary(linear_model)
 ```
 The F-statistic p-value is extremely small, so is B`s p-value. Also, Multiple R-squared is very big (0.95 out of 1).
@@ -132,7 +132,7 @@ of games the player will play with weaker opponents.
 ### Tests
 
 We can consider all the games, in which one player won (exclude all draws)
-This way, all the data can be represented as many Bernoulli random variables (0 if the player lost tieh probability 1 - p , 1 if he won with probability p)
+This way, all the data can be represented as many Bernoulli random variables (0 if the player lost with probability 1 - p , 1 if he won with probability p)
 We have two data sets: all the games and all the games with castling. We know, that the unbiased estimator fot P is sample mean, so we can perform a t-test (as variance is unknown) for estimating, whether two P parameters of variables are equal.
 
 If they are equal, it means, that castling does not influence the game results, if they are not, then castling increases or decreases the win rate (depending on the result)
@@ -163,19 +163,38 @@ x <- as.numeric(as.character(data_wins))
 y <- as.numeric(as.character(data.no_castling_wins))
 t.test(x=x, y=y, alternative="two.sided")
 ```
-We get 
+We get the opposite result. If the one does not do the castling the pronanility of victory becomes smaller.
+The p-value is too small, so we can state, that two P parameters are not equal.
 
+
+#### Dependency on the number of move, castling was made
+
+Let us look at the distribution of the number of move, the castling was made at
 
 
 ```{r}
 castling_moves = df$move_number[df$move_number != 0]
 hist(castling_moves, breaks=seq(2, 55), probability=T)
+```
 
 
+It looks very similar to some famous distribution, so let us try to find which one.
+
+```{r}
 descdist(castling_moves)
+```
+This graph shows us, from what distribution is our sample likely to be drawn.
+
+It seems to be close to Gamma one, so let us test this
+
+Here, we find the most likely shape and scale parameters for Gamma distribution and plot the graphs for our data and the expected distribution
+
+```{r}
 fit.gamma <- fitdist(castling_moves, "gamma")
 plot(fit.gamma)
 ```
+
+Let us perform the Kolmogorov-Smirnov goodness-of-fit test for determining, how lokely is our data to be drawn from the Gamma distribution
 
 ```{r}
 shape <- fit.gamma$estimate[1]
