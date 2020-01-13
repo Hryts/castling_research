@@ -108,6 +108,7 @@ It is almost one, which means, that castling almost does not matter for win rate
 #### It is interesting, that win rates with castling have a close to linear dependency of the rating. Let us test this
 
 ```{r}
+func <- victories$wins / victories$castling ~ victories$rating
 plot(func, col="blue", pch=16, main="Dependency of win rate on rating", xlab="Raing", ylab="Win rate")
 abline(linear_model, col="red")
 ```
@@ -115,7 +116,6 @@ abline(linear_model, col="red")
 The data should fit the LM very well, so let us look at the sumary
 
 ```{r}
-func <- victories$wins / victories$castling ~ victories$rating
 linear_model = lm(func)
 summary(linear_model)
 ```
@@ -133,7 +133,9 @@ of games the player will play with weaker opponents.
 
 We can consider all the games, in which one player won (exclude all draws)
 This way, all the data can be represented as many Bernoulli random variables (0 if the player lost tieh probability 1 - p , 1 if he won with probability p)
-We have two data sets: all the games and all the games with castling. We know, that the unbiased estimator fot P is sample mean, so we can perform a t-test (as variance is unknown)
+We have two data sets: all the games and all the games with castling. We know, that the unbiased estimator fot P is sample mean, so we can perform a t-test (as variance is unknown) for estimating, whether two P parameters of variables are equal.
+
+If they are equal, it means, that castling does not influence the game results, if they are not, then castling increases or decreases the win rate (depending on the result)
 
 ```{r}
 data_wins <- df$victory[as.numeric(df$victory) != 2]
@@ -146,14 +148,24 @@ x <- as.numeric(as.character(data_wins))
 y = as.numeric(as.character(data.castling_wins))
 t.test(x = x, y = y, alternative="two.sided")
 ```
+The mean of the first data is 0.5, as we anlysed only the data from many games (in which one player wins and the second one loses)
+The mean of the second data is 0.509, almost 0.51. This is not so bog difference, but for such a big data (almost 4 million elements), this is very significant. This is also approved by the p-value of the test. It is extremely small, so we should reject the null hypotesis. This means, that the castling is really a useful move and the one is more likely to win, making the castling
+
+
+#### But, what is the average win rate if the player does not do castling?
+
+We will perform the same t-test as in the previous chapter.
 
 ```{r}
 data.no_castling <- df$victory[df$castling==0]
-data.no_castling_wins <- data.no_castling #[as.numeric(data.no_castling) != 2]
+data.no_castling_wins <- data.no_castling 
 x <- as.numeric(as.character(data_wins))
 y <- as.numeric(as.character(data.no_castling_wins))
 t.test(x=x, y=y, alternative="two.sided")
 ```
+We get 
+
+
 
 ```{r}
 castling_moves = df$move_number[df$move_number != 0]
