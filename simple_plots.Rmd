@@ -1,5 +1,7 @@
 ---
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 <center><h4>Mini research project. <br>
@@ -23,7 +25,7 @@ In the .csv file we have 4 columns representing the rating of a player, whether 
 
 ```{r}
 library("BSDA")
-install.packages("fitdistrplus")
+#install.packages("fitdistrplus")
 library("fitdistrplus")
 ```
 
@@ -117,12 +119,10 @@ abline(linear_model, col="red")
 The data should fit the LM very well, so let us look at the sumary
 
 ```{r}
-
 summary(linear_model)
 ```
-The F-statistic p-value is extremely small, so is B`s p-value. Also, Multiple R-squared is very big (0.95 out of 1).
-This shows, that our data fits into this linear model almost perfectly. So, there is a linear dependency between player`s rating and win rate.
-
+The F-statistic p-value is extremely small, so is B's p-value. Also, Multiple R-squared is very big (0.95 out of 1).
+This shows, that our data fits into this linear model almost perfectly. So, there is a linear dependency between playe's rating and win rate.
 #### Why this happens?
 In general, at some internet platforms, there are not so many players with high or low rating, so most of games
 are between players with a big difference in ratings. This leads to the fact, that the bigger rating is, the bigger number
@@ -203,6 +203,12 @@ rate <- fit.gamma$estimate[2]
 
 ks.test(castling_moves, "pgamma", shape=shape, rate=rate)
 ```
+We see, that the resulting p-value of the test is extremely small. This means, that our data is almost for sure not drawn from the Gamma distribution.
+
+But why is the p-value so small?
+That is because for p-value to be larger, the distribution of data of such a size should be extremely close to the expected one with almost no variation.
+
+
 
 ```{r}
 move_number_success_rate = data.frame(move_number=seq(1, 30), wins=0, number_of_games=0)
