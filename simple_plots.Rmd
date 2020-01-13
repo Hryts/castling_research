@@ -131,3 +131,16 @@ rate <- fit.gamma$estimate[2]
 ks.test(castling_moves, "pgamma", shape=shape, rate=rate)
 ```
 
+```{r}
+move_number_success_rate = data.frame(move_number=seq(1, 50), wins=0, number_of_games=0)
+
+for(i in 1:length(df$move_number)){
+  if(as.numeric(df$victory[i]) == 3 && df$move_number[i] <= 50){
+    move_number_success_rate$wins[df$move_number[i]] = move_number_success_rate$wins[df$move_number[i]] + 1
+  }
+  if(df$move_number[i] <= 50){
+    move_number_success_rate$number_of_games[df$move_number[i]] = move_number_success_rate$number_of_games[df$move_number[i]] + 1
+  }
+}
+plot(x=move_number_success_rate$move_number, y=move_number_success_rate$wins/move_number_success_rate$number_of_games)
+```
