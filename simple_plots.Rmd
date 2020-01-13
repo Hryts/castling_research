@@ -15,6 +15,8 @@ We downloaded the data for the whole 2019 year in blitz mode. There are about 2 
 
 It was in .PGN format, so we made a parser in Python to get all the data in convenient .CSV format.
 
+Parser and the parsed .csv file can be found here: https://github.com/Hryts/castling_research
+
 In the .csv file we have 4 columns representing the rating of a player, whether he made a castling, whether he won and the number of the move, castling was made on.
 
 
@@ -62,44 +64,83 @@ for (i in castling_rate$rating) {
 
 
 ```{r}
-plot(x = castling_rate$rating, y = castling_rate$castling / castling_rate$all, type="l")
+plot(x = castling_rate$rating, y = castling_rate$castling / castling_rate$all, type="l", main="Castling frequency", 
+     xlab="Rating", ylab="Frequency")
 ```
 
 From here we can see, that in general, the bigger rating of the player is, the more popular move castling is.
 This can mean, that castling is an efective move, as almost all games by players with high rating are with castling played
 
 
-```{r}
-plot(x = overall$rating, y = overall$wins / overall$games, type="l")
-```
-
-
-
+#### Let us plot the graph of dependency of win rate with castling on player`s rating
 
 ```{r}
-plot(x = victories$rating, y = victories$wins / victories$castling, type="l")
+plot(x = victories$rating, y = victories$wins / victories$castling, type="l", 
+     main="Win rate with castling", xlab="Rating", ylab="Win rate")
 ```
 
+It seems, this data fits into some linear model. Maybe, the castling is really a very powerful move
+Let us look at the corelation of win rate with castling and castling frequency
 
 
+```{r}
+cor(victories$wins / victories$castling, castling_rate$castling / castling_rate$all)
+```
+It seems, that the more player does castling, the more he wins. 
+But, let us plot the graph of general win rate (without paying attention to castling) and analyze it
 
 
+```{r}
+plot(x = overall$rating, y = overall$wins / overall$games, type="l", 
+     main="Win rate without castling", xlab="Rating", ylab="Win rate")
+```
+
+As we can see here, the graph is almost the same, as the one of win rate with castling.
+
+Let us find their corelation
+
+```{r}
+cor(overall$wins / overall$games, victories$wins / victories$castling)
+```
+
+It is almost one, which means, that castling almost does not matter for win rate
+
+#### It is interesting, that win rates with castling have a close to linear dependency of the rating. Let us test this
+
+```{r}
+plot(func, col="blue", pch=16, main="Dependency of win rate on rating", xlab="Raing", ylab="Win rate")
+abline(linear_model, col="red")
+```
+
+The data should fit the LM very well, so let us look at the sumary
 
 ```{r}
 func <- victories$wins / victories$castling ~ victories$rating
 linear_model = lm(func)
 summary(linear_model)
-
-plot(func, col="blue", pch=16)
-abline(linear_model, col="red")
 ```
+The F-statistic p-value is extremely small, so is B`s p-value. Also, Multiple R-squared is very big (0.95 out of 1).
+This shows, that our data fits into this linear model almost perfectly. So, there is a linear dependency between player`s rating and win rate.
+
+#### Why this happens?
+In general, at some internet platforms, there are not so many players with high or low rating, so most of games
+are between players with a big difference in ratings. This leads to the fact, that the bigger rating is, the bigger number
+of games the player will play with weaker opponents.
+
+
+
+### Tests
+
+We can consider all the games, in which one player won (exclude all draws)
+This way, all the data can be represented as many Bernoulli random variables (0 if the player lost tieh probability 1 - p , 1 if he won with probability p)
+We have two data sets: all the games and all the games with castling. We know, that the unbiased estimator fot P is sample mean, so we can perform a t-test (as variance is unknown)
+
 ```{r}
 data_wins <- df$victory[as.numeric(df$victory) != 2]
 length(df$victory)
 
 data.castling_wins = df$victory[df$castling == 1]
-data.castling_wins = data.castling_wins #[as.numeric(data.castling_wins) != 2]
-
+data.castling_wins = data.castling_wins
 
 x <- as.numeric(as.character(data_wins))
 y = as.numeric(as.character(data.castling_wins))
