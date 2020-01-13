@@ -13,6 +13,10 @@ This is a set of many chess games from some internet platdorms
 
 We downloaded the data for the whole 2019 year in blitz mode. There are about 4 million games.
 
+It was in .PGN format, so we made a parser in Python to get all the data in convenient .CSV format.
+
+In the .csv file we have 4 columns representing the rating of a player, whether he made a castling, whether he won and the number of the move, castling was made on.
+
 
 
 ```{r}
@@ -48,13 +52,25 @@ for (i in ratios$rating) {
   with_castling <- with_castling[as.numeric(with_castling$victory) == 3,]
   success$wins[success$rating == i] <- length(with_castling$rating)
 }
+```
 
+```{r}
 
 plot(x = overal$rating, y = overal$wins / overal$games, type="l")
 
+```
+
+```{r}
 plot(x = success$rating, y = success$wins / success$castling, type="l")
+```
+
+
+```{r}
 plot(x = ratios$rating, y = ratios$castling / ratios$all, type="l")
 ```
+
+
+
 ```{r}
 func <- success$wins / success$castling ~ success$rating
 linear_model = lm(func)
@@ -74,7 +90,7 @@ data.castling_wins = data.castling_wins #[as.numeric(data.castling_wins) != 2]
 
 x <- as.numeric(as.character(data_wins))
 y = as.numeric(as.character(data.castling_wins))
-t.test(x = x, y = y, alternative="less")
+t.test(x = x, y = y, alternative="two.sided")
 ```
 
 ```{r}
@@ -82,7 +98,7 @@ data.no_castling <- df$victory[df$castling==0]
 data.no_castling_wins <- data.no_castling #[as.numeric(data.no_castling) != 2]
 x <- as.numeric(as.character(data_wins))
 y <- as.numeric(as.character(data.no_castling_wins))
-t.test(x=x, y=y, alternative="greater")
+t.test(x=x, y=y, alternative="two.sided")
 ```
 
 ```{r}
